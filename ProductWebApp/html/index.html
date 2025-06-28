@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Product Feedback | MyOnlineStore</title>
+        <!--This is the tag for responsive design-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--SEO: Page description appears in Search Engine-->
+        <meta name="description" content="Submit your product feedback for SmartWatchx2, Noise Free earcbuds and more at MyOnlineStore.Help us improve!">
+
+        <!--SEO: Keywords relevant to search queries-->
+        <meta name="keywords" content="SmartWatch, Feedback, Electronics, Online Store, Product Reviews">
+
+        <!--SEO: Robots tell search engines whether to follow index/follow links-->
+        <meta name="robots" content="index,follow">
+    </head>
+    <body>
+        <!--Semantic tag: NAVIGATION LINKS FOR SITE-->
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href="#feedback">feedback</a>
+                </li>
+                <li>
+                    <a href="#products">products</a>
+                </li>
+                <li>
+                    <a href="#contact">contact</a>
+                </li>
+            </ul>
+        </nav>
+        <!--Semantic tag: Main Meaningful content of the page-->
+        <main>
+            <section id="intro">
+                <h2>WELCOME!</h2>
+                <p>
+                    We value your <em>opinions</em> on our
+                    <abbr title="Electronic Commerce">e-commerce</abbr> platform.
+                    <mark>YOUR FEEDBACK HELPS US IMPROVE!!!</mark>
+                </p>
+                
+            </section>
+            <section id="products">
+                <article>
+                    <figure>
+                        <img src="../product_images/Smartwatchx2.jpeg" alt="Smart Watchx2" width="200">
+                        <figcaption>
+                            Track your health and stay connected with Smart Watchx2
+                        </figcaption>
+                    </figure>
+                    <!-- Expandable product specifications -->
+                <details>
+                    <summary>Product Specifications</summary>
+                    <ul>
+                        <li>Battery: <time datetime="P7D">7-day life</time></li>
+                        <li>Water Resistant: 50 meters</li>
+                        <li>Connectivity: Bluetooth 5.0</li>
+                    </ul>
+                </details>
+                </article>
+            </section>
+            <aside>
+                <h3>Low Stock Alert</h3>
+                <p>Only a few SmartWatch X2 left:</p>
+                <meter value="3" min="0" max="10">3 of 10</meter>
+            </aside>
+                    <!-- Feedback Form -->
+        <section id="feedback">
+            <h2>Submit Your Feedback</h2>
+            <form method="post" action="/submit-feedback">
+                <fieldset>
+                    <legend>Customer Info</legend>
+
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name" required><br><br>
+
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email" required><br><br>
+
+                    <label>Gender:</label><br>
+                    <input type="radio" name="gender" value="Male" checked> Male
+                    <input type="radio" name="gender" value="Female"> Female
+                    <input type="radio" name="gender" value="Other"> Other<br><br>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Your Experience</legend>
+
+                    <label for="product">Product:</label><br>
+                    <select name="product" id="product">
+                        <option value="smartwatch">SmartWatch X2</option>
+                        <option value="earbuds">NoiseFree Earbuds</option>
+                        <option value="laptop">LiteBook 15</option>
+                    </select><br><br>
+
+                    <label for="rating">Rate (1-5):</label><br>
+                    <input type="range" name="rating" min="1" max="5"><br>
+                    <progress value="4" max="5">4 out of 5</progress><br><br>
+
+                    <label for="comments">Comments:</label><br>
+                    <textarea id="comments" name="comments" rows="4" cols="50"></textarea><br><br>
+                </fieldset>
+
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </section>
+        <!-- Data Summary in a Table -->
+        <section id="summary">
+            <h2>Recent Ratings</h2>
+            <table border="1">
+                <caption>Customer Review Summary</caption>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Average Rating</th>
+                        <th>Top Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SmartWatch X2</td>
+                        <td>4.5</td>
+                        <td>"Amazing battery and features!"</td>
+                    </tr>
+                    <tr>
+                        <td>NoiseFree Earbuds</td>
+                        <td>4.2</td>
+                        <td>"Crisp sound and great fit."</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        </main>
+        <!--Semantic tag: Footer - ending of the page-->
+        <footer>
+            <address>
+                Contact: <a href="mailto:samuelcsofficial@gmail.com">samuelcsofficial@gmail.com</a>
+                &copy; <time datetime="2025-06-27">2025</time>
+                MyOnlineStore Inc. All rights reserved.
+            </address>
+        </footer>
+    </body>
+
+</html>

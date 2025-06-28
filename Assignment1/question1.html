@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Assignment 1 - Question 1</title>
+    </head>
+    <body>
+        <header>
+            <h1>Travel Reservation</h1>
+        </header>
+        <main>
+            <section id="registration details">
+                <h3>*denotes mandatory</h3>
+                <form method="post" action="/submit-feedback"></form>
+                    <fieldset>
+                        <label for="full name">Full Name:*</label>
+                        <input type="name" id="full_name" name="full_name" required placeholder="FullName LastName"><br><br>
+                        <label for="email">Email Address:*</label>
+                        <input type="email" id="email" name="email" required placeholder="EMAIL_ADDRESS"><br><br>
+                        <label for="tour package">Select Tour Package:*</label>
+                        <select name="Tour package" id="package"><br><br>
+                            <option value="GOA">Goa</option>
+                            <option value="SHIMLA">Shimla</option>
+                            <option value="OOTY">Ooty</option>
+                            <option value="PONDICHERRY">Pondicherry</option>
+                        </select><br><br>
+                        <label for="Arrival date">Date:*</label>
+                        <input type="date" id="arr_date" name="arr_date" required placeholder="m/d/y"><br><br>
+                        <label for="number">Number of persons:*</label>
+                        <input type="number" id="per_number" name="per_number" required placeholder="UNKNOWN TYPE"><br><br>
+                        <label>What would you like to avail?*</label><br>
+                        <label for="boarding">Boarding<input type="checkbox" name="avail" value="boarding"></label><br>
+                        <label for="fooding">Fooding<input type="checkbox" name="avail" value="fooding"></label><br>
+                        <label for="sightseeing">Sight seeing<input type="checkbox" name="avail" value="sightseeing"></label><br>
+                        <label for="code">Discount Coupon Code:</label><br>
+                        <input type="text" id="coupon" name="coupon" placeholder="UNKNOWN_TYPE"><br><br>
+                        <label>Terms and Conditions:*</label>
+                        <input type="radio" id="terms" name="agree"> I agree
+                        <input type="radio" id="terms" name="disagree"> I disagree<br><br> 
+                    </fieldset>
+                    <button type="submit">Complete Reservation</button>
+                </form>
+            </section>   
+        </main>
+    </body>
+</html>
