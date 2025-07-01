@@ -1,42 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login Page</title>
-</head>
-<body style="background-color: #f0f2f5; font-family: Arial, sans-serif;">
-
-  <main style="width: 350px; margin: 50px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center;">
-    
-    <!-- Profile Avatar -->
-    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width: 100px; border-radius: 50%; margin-bottom: 20px;">
-
-    <!-- Login Form -->
-    <form method="post" action="/login">
-
-      <!-- Username -->
-      <input type="text" name="username" placeholder="Username" required
-        style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;">
-
-      <!-- Password -->
-      <input type="password" name="password" placeholder="Password" required
-        style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;">
-
-      <!-- Remember Me and Forgot Password -->
-      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 15px;">
-        <label>
-          <input type="checkbox" name="remember"> Remember Me
-        </label>
-        <a href="/forgot-password" style="text-decoration: none; color: #0077cc;">Forgot Password?</a>
-      </div>
-
-      <!-- Login Button -->
-      <button type="submit"
-        style="width: 100%; padding: 10px; background-color: #0077cc; color: white; border: none; border-radius: 5px; font-weight: bold;">
-        Login
-      </button>
-
-    </form>
-  </main>
-
-</body>
-</html>
+<!-- <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <style>
+        /* Universal Selector
+        *{
+          font-family: Verdana, Geneva, Tahoma, sans-serif;
+        } */
+        #para1{
+          color: red;
+          font-weight: bold;
+        }
+        #para2{
+          color: blue;
+          font-family: sans-serif;
+          font-style: italic;
+        }
+        #para3{
+          color: blueviolet;
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+          font-weight: lighter;
+        }
+        .class1{
+          color: green;
+          font-style: oblique;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>CSS SELECTORS</h1>
+      <p id="para1">This is a normal paragraph</p>
+      <p id="para2">This is the first paragraph</p>
+      <p id="para3">This is the second paragraph</p>
+      <p class="class1">This is the third paragraph with class</p>
+    </body>
+  </html> -->
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      .class1{
+        width: 120px;
+        height: 30px;
+        padding: 20px;
+        margin: 30px;
+        border: 2px solid;
+        font-size: 14px;
+        color: red;
+      }
+      .class2{
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 20px;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="class1">JUST A BODY</p>
+    <p class="class2">Just me</p>
+  </body>
+  </html>
