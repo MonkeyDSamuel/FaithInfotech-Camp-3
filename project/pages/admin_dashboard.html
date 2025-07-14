@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/admin_dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
+    <nav>
+      <ul>
+          <li><button onclick="showSection('new', event)" class="nav-btn active"><i class="fas fa-user-plus"></i> New Staff</button></li>
+          <li><button onclick="showSection('updated', event)" class="nav-btn"><i class="fas fa-user-edit"></i> Update Staff</button></li>
+          <li><button onclick="showSection('view', event)" class="nav-btn"><i class="fas fa-users"></i> View All Staff</button></li>
+          <li><button onclick="showSection('change', event)" class="nav-btn"><i class="fas fa-key"></i> Change Password</button></li>
+          <li><button onclick="logout()" class="nav-btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+      </ul>
+    </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- New Staff Registration Section -->
+    <section id="new" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-user-plus"></i> New Staff Registration</h2>
+        <p>Add new staff members to the system</p>
+      </div>
+      
+      <form id="newStaffForm" class="dashboard-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="staffId">Staff ID *</label>
+            <input type="text" id="staffId" name="staffId" required readonly>
+            <small class="form-hint">Auto-generated based on department</small>
+          </div>
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" name="fullName" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required placeholder="Enter a valid Gmail address">
+            <small class="form-hint">Email must end with @gmail.com</small>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required pattern="[789][0-9]{9}" maxlength="10" placeholder="Enter a valid phone number starting with 7, 8 or 9">
+            <small class="form-hint">Enter 10 digit number starting with 7, 8 or 9</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="department">Department *</label>
+            <select id="department" name="department" required>
+              <option value="">Select Department</option>
+              <option value="reception">Reception</option>
+              <option value="doctor">Doctor</option>
+              <option value="labtech">Lab Technician</option>
+              <option value="pharmacist">Pharmacist</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="position">Position *</label>
+            <input type="text" id="position" name="position" required list="positionSuggestions">
+            <datalist id="positionSuggestions">
+              <!-- Options will be populated by JavaScript -->
+            </datalist>
+            <small class="form-hint">Hover over this field to see suggested roles</small>
+          </div>
+        </div>
+        
+        <!-- Doctor-specific fields -->
+        <div id="doctorFields" class="doctor-specific-fields" style="display: none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="consultationFee">Consultation Fee (₹) *</label>
+              <input type="number" id="consultationFee" name="consultationFee" min="0" step="50" placeholder="Enter consultation fee">
+              <small class="form-hint">Enter the consultation fee in rupees</small>
+            </div>
+            <div class="form-group">
+              <!-- Empty div for layout balance -->
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="workingDays">Working Days *</label>
+              <select id="workingDays" name="workingDays" multiple>
+                <option value="monday">Monday</option>
+                <option value="tuesday">Tuesday</option>
+                <option value="wednesday">Wednesday</option>
+                <option value="thursday">Thursday</option>
+                <option value="friday">Friday</option>
+                <option value="saturday">Saturday</option>
+                <option value="sunday">Sunday</option>
+              </select>
+              <small class="form-hint">Select multiple working days (Ctrl+Click)</small>
+            </div>
+            <div class="form-group">
+              <label>Working Hours *</label>
+              <div class="time-range">
+                <input type="time" id="startTime" name="startTime" required>
+                <span>to</span>
+                <input type="time" id="endTime" name="endTime" required>
+              </div>
+              <small class="form-hint">Select working hours</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password *</label>
+            <input type="password" id="password" name="password" required readonly>
+            <small class="form-hint">Auto-generated from first name and staff ID</small>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required readonly>
+            <small class="form-hint">Auto-generated from first name and staff ID</small>
+          </div>
+        </div>
+        
+        <!-- Address Section (replaced with textarea) -->
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="address">Address *</label>
+            <textarea id="address" name="address" required rows="3" placeholder="Enter full address"></textarea>
+            <small class="form-hint">Enter the complete address</small>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Register Staff</button>
+          <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Update Staff Details Section -->
+    <section id="updated" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-user-edit"></i> Update Staff Details</h2>
+        <p>Modify existing staff information</p>
+      </div>
+      
+      <div class="search-section">
+        <div class="search-box">
+          <input type="text" id="searchStaffId" placeholder="Enter Staff ID to search...">
+          <button onclick="searchStaff()" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </div>
+      </div>
+      
+      <form id="updateStaffForm" class="dashboard-form" style="display: none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateStaffId">Staff ID</label>
+            <input type="text" id="updateStaffId" name="updateStaffId" readonly>
+          </div>
+          <div class="form-group">
+            <label for="updateFullName">Full Name *</label>
+            <input type="text" id="updateFullName" name="updateFullName" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateEmail">Email *</label>
+            <input type="email" id="updateEmail" name="updateEmail" required placeholder="Enter valid Gmail address">
+            <small class="form-hint">Email must end with @gmail.com</small>
+          </div>
+          <div class="form-group">
+            <label for="updatePhone">Phone Number *</label>
+            <input type="tel" id="updatePhone" name="updatePhone" required pattern="[789][0-9]{9}" maxlength="10" placeholder="Enter 10 digit number starting with 7, 8 or 9">
+            <small class="form-hint">Enter 10 digit number starting with 7, 8 or 9</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateDepartment">Department *</label>
+            <select id="updateDepartment" name="updateDepartment" required>
+              <option value="">Select Department</option>
+              <option value="reception">Reception</option>
+              <option value="doctor">Doctor</option>
+              <option value="labtech">Lab Technician</option>
+              <option value="pharmacist">Pharmacist</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="updatePosition">Position *</label>
+            <input type="text" id="updatePosition" name="updatePosition" required list="updatePositionSuggestions">
+            <datalist id="updatePositionSuggestions">
+              <!-- Options will be populated by JavaScript -->
+            </datalist>
+            <small class="form-hint">Hover over this field to see suggested roles</small>
+          </div>
+        </div>
+        
+        <!-- Doctor-specific fields for update -->
+        <div id="updateDoctorFields" class="doctor-specific-fields" style="display: none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateConsultationFee">Consultation Fee (₹) *</label>
+              <input type="number" id="updateConsultationFee" name="updateConsultationFee" min="0" step="50" placeholder="Enter consultation fee">
+              <small class="form-hint">Enter the consultation fee in rupees</small>
+            </div>
+            <div class="form-group">
+              <!-- Empty div for layout balance -->
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateWorkingDays">Working Days *</label>
+              <select id="updateWorkingDays" name="updateWorkingDays" multiple>
+                <option value="monday">Monday</option>
+                <option value="tuesday">Tuesday</option>
+                <option value="wednesday">Wednesday</option>
+                <option value="thursday">Thursday</option>
+                <option value="friday">Friday</option>
+                <option value="saturday">Saturday</option>
+                <option value="sunday">Sunday</option>
+              </select>
+              <small class="form-hint">Select multiple working days (Ctrl+Click)</small>
+            </div>
+            <div class="form-group">
+              <label>Working Hours *</label>
+              <div class="time-range">
+                <input type="time" id="updateStartTime" name="updateStartTime" required>
+                <span>to</span>
+                <input type="time" id="updateEndTime" name="updateEndTime" required>
+              </div>
+              <small class="form-hint">Select working hours</small>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Address Section (replaced with textarea) for update form -->
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="updateAddress">Address *</label>
+            <textarea id="updateAddress" name="updateAddress" required rows="3" placeholder="Enter full address"></textarea>
+            <small class="form-hint">Enter the complete address</small>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Staff</button>
+          <button type="button" onclick="cancelUpdate()" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- View All Staff Section -->
+    <section id="view" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-users"></i> All Staff Members</h2>
+        <p>View and manage all staff information</p>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="staffSearch" placeholder="Search staff by name, ID, or department...">
+          <button onclick="searchStaffTable()" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </div>
+        <div class="filter-controls">
+          <select id="departmentFilter">
+            <option value="">All Departments</option>
+            <option value="reception">Reception</option>
+            <option value="doctor">Doctor</option>
+            <option value="labtech">Lab Technician</option>
+            <option value="pharmacist">Pharmacist</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="staffTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Staff ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Position</th>
+              <th>Details</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staffTableBody">
+            <!-- Staff data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Change Staff Password Section -->
+    <section id="change" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-key"></i> Change Staff Password</h2>
+        <p>Reset or change staff member passwords</p>
+      </div>
+      
+      <form id="changePasswordForm" class="dashboard-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="passwordStaffId">Staff ID *</label>
+            <input type="text" id="passwordStaffId" name="passwordStaffId" required>
+          </div>
+          <div class="form-group">
+            <label for="staffName">Staff Name</label>
+            <input type="text" id="staffName" name="staffName" readonly>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newPassword">New Password *</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="confirmNewPassword">Confirm New Password *</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-key"></i> Change Password</button>
+          <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Success/Error Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modalMessage"></div>
+    </div>
+  </div>
+
+  <script src="../js/admin_dashboard.js"></script>
+</body>
+</html>

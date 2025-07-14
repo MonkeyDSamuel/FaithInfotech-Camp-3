@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Data Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .result {
+            background: #e8f5e8;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 4px solid #4caf50;
+        }
+        .error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f2f2f2;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .field-name {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        .status-active {
+            background: #4caf50;
+            color: white;
+        }
+        .status-warning {
+            background: #ff9800;
+            color: white;
+        }
+        .status-error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prescription Data Debug Test</h1>
+    <p>This page helps debug the prescription data structure and verify the pharmacist dashboard can read it correctly.</p>
+
+    <div class="test-section">
+        <h3>Test 1: Raw Data from Local Storage</h3>
+        <button onclick="showRawData()">Show Raw Data</button>
+        <div id="rawDataResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Processed Data (How Pharmacist Dashboard Sees It)</h3>
+        <button onclick="showProcessedData()">Show Processed Data</button>
+        <div id="processedDataResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Field Mapping Test</h3>
+        <button onclick="testFieldMapping()">Test Field Mapping</button>
+        <div id="fieldMappingResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: Fix Data Structure</h3>
+        <button onclick="fixDataStructure()">Fix Data Structure</button>
+        <div id="fixDataResult"></div>
+    </div>
+
+    <script>
+        const PRESCRIPTION_DATA_KEY = 'hospitalPharmacistData';
+
+        // Load data from local storage
+        function loadData(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            } catch (error) {
+                console.error(`Error loading data from ${key}:`, error);
+                return [];
+            }
+        }
+
+        // Save data to local storage
+        function saveData(data, key) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (error) {
+                console.error(`Error saving data to ${key}:`, error);
+                return false;
+            }
+        }
+
+        // Get status badge (simulate staffUtils.getStatusBadge)
+        function getStatusBadge(status) {
+            const statusClasses = {
+                'pending': 'status-warning',
+                'in_progress': 'status-active',
+                'completed': 'status-active',
+                'cancelled': 'status-error',
+                'active': 'status-active'
+            };
+            
+            const className = statusClasses[status] || 'status-warning';
+            return `<span class="status-badge ${className}">${status}</span>`;
+        }
+
+        // Format date (simulate staffUtils.formatDate)
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function showRawData() {
+            const prescriptions = loadData(PRESCRIPTION_DATA_KEY);
+            
+            let result = '<div class="result">';
+            result += `<h4>Raw Prescription Data (${prescriptions.length} items):</h4>`;
+            
+            if (prescriptions.length === 0) {
+                result += '<p>No prescriptions found in local storage.</p>';
+            } else {
+                prescriptions.forEach((prescription, index) => {
+                    result += `<h5>Prescription ${index + 1}:</h5>`;
+                    result += '<pre style="background: #f8f8f8; padding: 10px; border-radius: 3px; overflow-x: auto;">';
+                    result += JSON.stringify(prescription, null, 2);
+                    result += '</pre>';
+                });
+            }
+            
+            result += '</div>';
+            document.getElementById('rawDataResult').innerHTML = result;
+        }
+
+        function showProcessedData() {
+            const prescriptions = loadData(PRESCRIPTION_DATA_KEY);
+            
+            let result = '<div class="result">';
+            result += `<h4>Processed Prescription Data (${prescriptions.length} items):</h4>`;
+            
+            if (prescriptions.length === 0) {
+                result += '<p>No prescriptions found in local storage.</p>';
+            } else {
+                result += '<table class="data-table">';
+                result += '<tr><th>Field</th><th>Value</th><th>Status</th></tr>';
+                
+                prescriptions.forEach((prescription, index) => {
+                    result += `<tr><td colspan="3" style="background: #e3f2fd; font-weight: bold;">Prescription ${index + 1}</td></tr>`;
+                    
+                    const fields = [
+                        { name: 'id', value: prescription.id },
+                        { name: 'patientId', value: prescription.patientId },
+                        { name: 'patientName', value: prescription.patientName },
+                        { name: 'doctorName', value: prescription.doctorName },
+                        { name: 'doctor', value: prescription.doctor },
+                        { name: 'date', value: prescription.date },
+                        { name: 'status', value: prescription.status },
+                        { name: 'prescriptionStatus', value: prescription.prescriptionStatus },
+                        { name: 'notes', value: prescription.notes },
+                        { name: 'medicines', value: prescription.medicines },
+                        { name: 'receivedAt', value: prescription.receivedAt },
+                        { name: 'createdAt', value: prescription.createdAt },
+                        { name: 'updatedAt', value: prescription.updatedAt }
+                    ];
+                    
+                    fields.forEach(field => {
+                        const hasValue = field.value !== undefined && field.value !== null && field.value !== '';
+                        const status = hasValue ? '✅ Has Value' : '❌ Missing/Empty';
+                        result += `<tr>
+                            <td><span class="field-name">${field.name}</span></td>
+                            <td>${field.value || 'undefined/null/empty'}</td>
+                            <td>${status}</td>
+                        </tr>`;
+                    });
+                });
+                
+                result += '</table>';
+            }
+            
+            result += '</div>';
+            document.getElementById('processedDataResult').innerHTML = result;
+        }
+
+        function testFieldMapping() {
+            const prescriptions = loadData(PRESCRIPTION_DATA_KEY);
+            
+            let result = '<div class="result">';
+            result += '<h4>Field Mapping Test:</h4>';
+            
+            if (prescriptions.length === 0) {
+                result += '<p>No prescriptions found in local storage.</p>';
+            } else {
+                const prescription = prescriptions[0]; // Test with first prescription
+                
+                result += '<h5>Testing with first prescription:</h5>';
+                result += '<table class="data-table">';
+                result += '<tr><th>Field</th><th>Raw Value</th><th>Processed Value</th></tr>';
+                
+                // Test field mappings
+                const mappings = [
+                    { 
+                        name: 'Status', 
+                        raw: prescription.status, 
+                        processed: prescription.status || prescription.prescriptionStatus || 'pending' 
+                    },
+                    { 
+                        name: 'Doctor Name', 
+                        raw: prescription.doctorName, 
+                        processed: prescription.doctorName || prescription.doctor || 'Unknown Doctor' 
+                    },
+                    { 
+                        name: 'Received Date', 
+                        raw: prescription.receivedAt, 
+                        processed: prescription.receivedAt ? formatDate(prescription.receivedAt) : 
+                                (prescription.createdAt ? formatDate(prescription.createdAt) : 'N/A') 
+                    },
+                    { 
+                        name: 'Patient ID', 
+                        raw: prescription.patientId, 
+                        processed: prescription.patientId || 'N/A' 
+                    },
+                    { 
+                        name: 'Patient Name', 
+                        raw: prescription.patientName, 
+                        processed: prescription.patientName || 'N/A' 
+                    },
+                    { 
+                        name: 'Notes', 
+                        raw: prescription.notes, 
+                        processed: prescription.notes || 'N/A' 
+                    },
+                    { 
+                        name: 'Medicines', 
+                        raw: prescription.medicines, 
+                        processed: prescription.medicines || 'N/A' 
+                    }
+                ];
+                
+                mappings.forEach(mapping => {
+                    const status = mapping.processed !== 'N/A' ? '✅ OK' : '❌ Missing';
+                    result += `<tr>
+                        <td>${mapping.name}</td>
+                        <td>${mapping.raw || 'undefined'}</td>
+                        <td>${mapping.processed}</td>
+                        <td>${status}</td>
+                    </tr>`;
+                });
+                
+                result += '</table>';
+                
+                // Test status badge
+                const status = prescription.status || prescription.prescriptionStatus || 'pending';
+                result += `<h5>Status Badge Test:</h5>`;
+                result += `<p>Status: ${status} → ${getStatusBadge(status)}</p>`;
+            }
+            
+            result += '</div>';
+            document.getElementById('fieldMappingResult').innerHTML = result;
+        }
+
+        function fixDataStructure() {
+            const prescriptions = loadData(PRESCRIPTION_DATA_KEY);
+            
+            let result = '<div class="result">';
+            result += '<h4>Fixing Data Structure:</h4>';
+            
+            if (prescriptions.length === 0) {
+                result += '<p>No prescriptions found to fix.</p>';
+            } else {
+                let fixedCount = 0;
+                
+                prescriptions.forEach((prescription, index) => {
+                    let needsFix = false;
+                    
+                    // Add missing fields
+                    if (!prescription.receivedAt && prescription.createdAt) {
+                        prescription.receivedAt = prescription.createdAt;
+                        needsFix = true;
+                    }
+                    
+                    if (!prescription.status && prescription.prescriptionStatus) {
+                        prescription.status = prescription.prescriptionStatus;
+                        needsFix = true;
+                    }
+                    
+                    if (!prescription.prescriptionStatus && prescription.status) {
+                        prescription.prescriptionStatus = prescription.status;
+                        needsFix = true;
+                    }
+                    
+                    if (!prescription.doctorName && prescription.doctor) {
+                        prescription.doctorName = prescription.doctor;
+                        needsFix = true;
+                    }
+                    
+                    if (!prescription.doctor && prescription.doctorName) {
+                        prescription.doctor = prescription.doctorName;
+                        needsFix = true;
+                    }
+                    
+                    if (needsFix) {
+                        fixedCount++;
+                        result += `<p>✅ Fixed prescription ${index + 1}</p>`;
+                    }
+                });
+                
+                if (fixedCount > 0) {
+                    saveData(prescriptions, PRESCRIPTION_DATA_KEY);
+                    result += `<p><strong>Fixed ${fixedCount} prescriptions and saved to local storage!</strong></p>`;
+                } else {
+                    result += '<p>No fixes needed - data structure is already correct.</p>';
+                }
+            }
+            
+            result += '</div>';
+            document.getElementById('fixDataResult').innerHTML = result;
+        }
+
+        // Auto-run raw data test on page load
+        window.addEventListener('load', function() {
+            showRawData();
+        });
+    </script>
+</body>
+</html> 

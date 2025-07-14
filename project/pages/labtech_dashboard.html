@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Technician Dashboard</title>
+  <link rel="stylesheet" href="../css/staff.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1><i class="fas fa-microscope"></i> Lab Technician Dashboard</h1>
+      <nav>
+        <ul>
+          <li><button onclick="showSection('testlist', event)" class="nav-btn active"><i class="fas fa-list"></i> Test List</button></li>
+          <li><button onclick="showSection('testreport', event)" class="nav-btn"><i class="fas fa-file-medical"></i> Test Report</button></li>
+          <li><button onclick="showSection('previousreports', event)" class="nav-btn"><i class="fas fa-history"></i> Previous Test Reports</button></li>
+          <li><button onclick="logout()" class="nav-btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Test List Section -->
+    <section id="testlist" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-list"></i> Test List</h2>
+        <p>Manage available laboratory tests</p>
+        <div id="testListInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading test list from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="testListSearch" placeholder="Search tests by name...">
+        </div>
+        <div class="filter-controls">
+          <select id="testCategoryFilter">
+            <option value="">All Categories</option>
+            <option value="blood">Blood Tests</option>
+            <option value="urine">Urine Tests</option>
+            <option value="biochemistry">Biochemistry</option>
+            <option value="microbiology">Microbiology</option>
+            <option value="radiology">Radiology</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button onclick="showAddTestForm()" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Test
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table id="testListTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Price (₹)</th>
+              <th>Duration</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="testListTableBody">
+            <!-- Test list will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Test Report Section -->
+    <section id="testreport" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-file-medical"></i> Test Report</h2>
+        <p>Create and manage test reports</p>
+        <div id="testReportInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading test reports from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="testReportSearch" placeholder="Search reports by Patient ID...">
+        </div>
+        <div class="filter-controls">
+          <select id="testReportStatusFilter">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <select id="testReportDateFilter">
+            <option value="">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+        <button onclick="showAddTestReportForm()" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Test Report
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table id="testReportTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Test Name</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="testReportTableBody">
+            <!-- Test reports will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Previous Test Reports Section -->
+    <section id="previousreports" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-history"></i> Previous Test Reports</h2>
+        <p>View and search previous test reports</p>
+        <div id="previousReportsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading previous reports from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="previousReportsSearch" placeholder="Search by Patient ID...">
+        </div>
+        <div class="filter-controls">
+          <select id="previousReportsStatusFilter">
+            <option value="">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <select id="previousReportsDateFilter">
+            <option value="">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="previousReportsTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Test Name</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="previousReportsTableBody">
+            <!-- Previous reports will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add/Edit Test Modal -->
+    <div id="testModal" class="modal">
+      <div class="modal-content" style="max-width: 600px;">
+        <span class="close" onclick="closeTestModal()">&times;</span>
+        <h3 id="testModalTitle">Add New Test</h3>
+        
+        <form id="testForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="testName">Test Name *</label>
+              <input type="text" id="testName" name="testName" required placeholder="Enter test name">
+            </div>
+            <div class="form-group">
+              <label for="testCategory">Category *</label>
+              <select id="testCategory" name="category" required>
+                <option value="">Select Category</option>
+                <option value="blood">Blood Tests</option>
+                <option value="urine">Urine Tests</option>
+                <option value="biochemistry">Biochemistry</option>
+                <option value="microbiology">Microbiology</option>
+                <option value="radiology">Radiology</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="testPrice">Price (₹) *</label>
+              <input type="number" id="testPrice" name="price" required min="0" step="0.01" placeholder="Enter price">
+            </div>
+            <div class="form-group">
+              <label for="testDuration">Duration (hours) *</label>
+              <input type="number" id="testDuration" name="duration" required min="1" placeholder="Enter duration in hours">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="testDescription">Description</label>
+              <textarea id="testDescription" name="description" rows="3" placeholder="Enter test description, preparation instructions, etc."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Test
+            </button>
+            <button type="button" onclick="closeTestModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add/Edit Test Report Modal -->
+    <div id="testReportModal" class="modal">
+      <div class="modal-content" style="max-width: 900px;">
+        <span class="close" onclick="closeTestReportModal()">&times;</span>
+        <h3 id="testReportModalTitle">Add New Test Report</h3>
+        
+        <form id="testReportForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="patientId">Patient ID *</label>
+              <input type="text" id="patientId" name="patientId" required placeholder="Enter Patient ID">
+            </div>
+            <div class="form-group">
+              <label for="patientName">Patient Name *</label>
+              <input type="text" id="patientName" name="patientName" required placeholder="Enter patient name">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="doctorName">Doctor Name *</label>
+              <input type="text" id="doctorName" name="doctorName" required placeholder="Enter doctor name">
+            </div>
+            <div class="form-group">
+              <label for="testDate">Test Date *</label>
+              <input type="date" id="testDate" name="testDate" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="testName">Test Name *</label>
+              <select id="testName" name="testName" required>
+                <option value="">Select Test</option>
+                <!-- Test options will be populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="testStatus">Status *</label>
+              <select id="testStatus" name="status" required>
+                <option value="">Select Status</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="highRange">High Range</label>
+              <input type="text" id="highRange" name="highRange" placeholder="Enter high range value">
+            </div>
+            <div class="form-group">
+              <label for="lowRange">Low Range</label>
+              <input type="text" id="lowRange" name="lowRange" placeholder="Enter low range value">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="actualReading">Actual Reading</label>
+              <input type="text" id="actualReading" name="actualReading" placeholder="Enter actual reading">
+            </div>
+            <div class="form-group">
+              <label for="observedReading">Observed Reading</label>
+              <input type="text" id="observedReading" name="observedReading" placeholder="Enter observed reading">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="testNotes">Test Notes</label>
+              <textarea id="testNotes" name="notes" rows="3" placeholder="Enter test notes, observations, etc."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Test Report
+            </button>
+            <button type="button" onclick="closeTestReportModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View/Print Test Report Modal -->
+    <div id="printReportModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closePrintReportModal()">&times;</span>
+        <div class="print-controls">
+          <button onclick="printTestReport()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Print Report
+          </button>
+          <button onclick="downloadTestReport()" class="btn btn-secondary">
+            <i class="fas fa-download"></i> Download PDF
+          </button>
+        </div>
+        <div id="printReportContent">
+          <!-- Report content will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Success/Error Modal -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modalMessage"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/staff.js"></script>
+  <script src="../js/labtech.js"></script>
+</body>
+</html>

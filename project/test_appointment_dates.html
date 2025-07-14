@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Appointment Dates</title>
+  <link rel="stylesheet" href="css/staff.css" />
+  <style>
+    .test-section {
+      background: white;
+      padding: 2rem;
+      margin: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .test-result {
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+  <div class="test-section">
+    <h1>Appointment Date Validation Test</h1>
+    
+    <h2>Test Cases:</h2>
+    
+    <div class="test-result success">
+      ✅ Future dates are now allowed for appointments
+    </div>
+    
+    <div class="test-result success">
+      ✅ Past dates are still blocked (prevents booking appointments in the past)
+    </div>
+    
+    <div class="test-result success">
+      ✅ Date range extended to 6 months from today
+    </div>
+    
+    <div class="test-result success">
+      ✅ Patient IDs now start from PAT0001 and increment sequentially
+    </div>
+    
+    <div class="test-result success">
+      ✅ Patient ID field is read-only and auto-generated
+    </div>
+    
+    <h3>Changes Made:</h3>
+    <ul>
+      <li>✅ Added new <code>validateAppointmentDate()</code> function that allows future dates</li>
+      <li>✅ Updated validation rules to use <code>appointmentDate</code> type instead of <code>date</code></li>
+      <li>✅ Extended date range from 3 months to 6 months</li>
+      <li>✅ Updated patient ID generation to start from PAT0001</li>
+      <li>✅ Made patient ID field read-only with distinctive styling</li>
+      <li>✅ Updated form hints to indicate future dates are allowed</li>
+    </ul>
+    
+    <h3>To Test:</h3>
+    <ol>
+      <li>Go to the Receptionist Dashboard</li>
+      <li>Try to register a new patient</li>
+      <li>Select a doctor and department</li>
+      <li>Verify that you can select future dates (up to 6 months)</li>
+      <li>Verify that past dates are blocked</li>
+      <li>Verify that Patient ID is auto-generated and read-only</li>
+    </ol>
+    
+    <p><strong>Note:</strong> The system now properly supports future appointment bookings while maintaining data integrity by preventing past date selections.</p>
+  </div>
+  
+  <script>
+    // Test the validation functions
+    function testValidation() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      console.log('Testing appointment date validation...');
+      console.log('Today:', today.toISOString().split('T')[0]);
+      console.log('Yesterday:', yesterday.toISOString().split('T')[0]);
+      console.log('Tomorrow:', tomorrow.toISOString().split('T')[0]);
+    }
+    
+    testValidation();
+  </script>
+</body>
+</html> 

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="../css/staff.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1><i class="fas fa-user-md"></i> Doctor Dashboard</h1>
+      <nav>
+        <ul>
+          <li><button onclick="showSection('today', event)" class="nav-btn active"><i class="fas fa-calendar-day"></i> Today's Appointments</button></li>
+          <li><button onclick="showSection('future', event)" class="nav-btn"><i class="fas fa-calendar-week"></i> Future Appointments</button></li>
+          <li><button onclick="showSection('prescription', event)" class="nav-btn"><i class="fas fa-prescription-bottle-medical"></i> Prescription Report</button></li>
+          <li><button onclick="showSection('lab', event)" class="nav-btn"><i class="fas fa-flask"></i> Lab Report</button></li>
+          <li><button onclick="logout()" class="nav-btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Today's Appointments Section -->
+    <section id="today" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-day"></i> Today's Appointments</h2>
+        <p>View and manage today's patient appointments</p>
+        <div id="todayAppointmentsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading appointments from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="todayAppointmentSearch" placeholder="Search appointments by patient name or ID...">
+        </div>
+        <div class="filter-controls">
+          <select id="todayStatusFilter">
+            <option value="">All Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="no-show">No Show</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="todayAppointmentsTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Age</th>
+              <th>Phone</th>
+              <th>Appointment Time</th>
+              <th>Symptoms</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="todayAppointmentsTableBody">
+            <!-- Today's appointments will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Future Appointments Section -->
+    <section id="future" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-week"></i> Future Appointments</h2>
+        <p>View upcoming patient appointments</p>
+        <div id="futureAppointmentsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading future appointments from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="futureAppointmentSearch" placeholder="Search appointments by patient name or ID...">
+        </div>
+        <div class="filter-controls">
+          <select id="futureStatusFilter">
+            <option value="">All Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="no-show">No Show</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="futureAppointmentsTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Age</th>
+              <th>Phone</th>
+              <th>Appointment Date</th>
+              <th>Appointment Time</th>
+              <th>Symptoms</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="futureAppointmentsTableBody">
+            <!-- Future appointments will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Prescription Report Section -->
+    <section id="prescription" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-prescription-bottle-medical"></i> Prescription Report</h2>
+        <p>Manage patient prescriptions and medical notes</p>
+        <div id="prescriptionInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading prescriptions from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="prescriptionSearch" placeholder="Search prescriptions by patient ID or name...">
+        </div>
+        <div class="filter-controls">
+          <select id="prescriptionDateFilter">
+            <option value="">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+        <button onclick="showAddPrescriptionForm()" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Prescription
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table id="prescriptionTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Date</th>
+              <th>Notes</th>
+              <th>Medicines</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="prescriptionTableBody">
+            <!-- Prescriptions will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add/Edit Prescription Modal -->
+    <div id="prescriptionModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closePrescriptionModal()">&times;</span>
+        <h3 id="prescriptionModalTitle">Add New Prescription</h3>
+        
+        <form id="prescriptionForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prescriptionPatientId">Patient ID *</label>
+              <input type="text" id="prescriptionPatientId" name="patientId" required readonly>
+            </div>
+            <div class="form-group">
+              <label for="prescriptionPatientName">Patient Name</label>
+              <input type="text" id="prescriptionPatientName" name="patientName" readonly>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="prescriptionDate">Date *</label>
+              <input type="date" id="prescriptionDate" name="date" required>
+            </div>
+            <div class="form-group">
+              <label for="prescriptionStatus">Status</label>
+              <select id="prescriptionStatus" name="status">
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="prescriptionNotes">Medical Notes *</label>
+              <textarea id="prescriptionNotes" name="notes" required rows="4" placeholder="Enter medical notes, diagnosis, and observations..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="prescriptionMedicines">Medicines *</label>
+              <textarea id="prescriptionMedicines" name="medicines" required rows="4" placeholder="Enter prescribed medicines with dosage and instructions..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Prescription
+            </button>
+            <button type="button" onclick="closePrescriptionModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lab Report Section -->
+    <section id="lab" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-flask"></i> Lab Report</h2>
+        <p>Manage laboratory test requests and reports</p>
+        <div id="labReportInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading lab reports from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="labReportSearch" placeholder="Search lab reports by patient ID or name...">
+        </div>
+        <div class="filter-controls">
+          <select id="labReportStatusFilter">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button onclick="showAddLabReportForm()" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Lab Report
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table id="labReportTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Date</th>
+              <th>Test Type</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="labReportTableBody">
+            <!-- Lab reports will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add/Edit Lab Report Modal -->
+    <div id="labReportModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closeLabReportModal()">&times;</span>
+        <h3 id="labReportModalTitle">Add New Lab Report</h3>
+        
+        <form id="labReportForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="labReportPatientId">Patient ID *</label>
+              <input type="text" id="labReportPatientId" name="patientId" required readonly>
+            </div>
+            <div class="form-group">
+              <label for="labReportPatientName">Patient Name</label>
+              <input type="text" id="labReportPatientName" name="patientName" readonly>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="labReportDate">Date *</label>
+              <input type="date" id="labReportDate" name="date" required>
+            </div>
+            <div class="form-group">
+              <label for="labReportStatus">Status</label>
+              <select id="labReportStatus" name="status">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="labReportTestType">Test Type *</label>
+              <select id="labReportTestType" name="testType" required>
+                <option value="">Select Test Type</option>
+                <option value="blood-test">Blood Test</option>
+                <option value="urine-test">Urine Test</option>
+                <option value="x-ray">X-Ray</option>
+                <option value="ecg">ECG</option>
+                <option value="ultrasound">Ultrasound</option>
+                <option value="mri">MRI</option>
+                <option value="ct-scan">CT Scan</option>
+                <option value="biopsy">Biopsy</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="labReportPriority">Priority</label>
+              <select id="labReportPriority" name="priority">
+                <option value="normal">Normal</option>
+                <option value="urgent">Urgent</option>
+                <option value="emergency">Emergency</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="labReportNotes">Test Notes *</label>
+              <textarea id="labReportNotes" name="notes" required rows="4" placeholder="Enter detailed notes about the required lab tests..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Lab Report
+            </button>
+            <button type="button" onclick="closeLabReportModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success/Error Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modalMessage"></div>
+    </div>
+  </div>
+
+  <script src="../js/staff.js"></script>
+  <script src="../js/doctor.js"></script>
+</body>
+</html>

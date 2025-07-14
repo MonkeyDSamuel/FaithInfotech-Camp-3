@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Receptionist Dashboard</title>
+  <link rel="stylesheet" href="../css/staff.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1><i class="fas fa-user-nurse"></i> Receptionist Dashboard</h1>
+      <nav>
+        <ul>
+          <li><button onclick="showSection('new', event)" class="nav-btn active"><i class="fas fa-user-plus"></i> New Patient</button></li>
+          <li><button onclick="showSection('update', event)" class="nav-btn"><i class="fas fa-user-edit"></i> Update Patient</button></li>
+          <li><button onclick="showSection('today', event)" class="nav-btn"><i class="fas fa-calendar-day"></i> Today's Patients</button></li>
+          <li><button onclick="showSection('all', event)" class="nav-btn"><i class="fas fa-users"></i> View All Patients</button></li>
+          <li><button onclick="refreshPatientData()" class="nav-btn" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);"><i class="fas fa-sync-alt"></i> Refresh Data</button></li>
+          <li><button onclick="debugLocalStorage()" class="nav-btn" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);"><i class="fas fa-bug"></i> Debug</button></li>
+          <li><button onclick="logout()" class="nav-btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- New Patient Registration Section -->
+    <section id="new" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-user-plus"></i> New Patient Registration</h2>
+        <p>Register new patients in the system</p>
+      </div>
+      
+      <form id="newPatientForm" class="dashboard-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientId">Patient ID *</label>
+            <input type="text" id="patientId" name="patientId" required readonly>
+            <small class="form-hint">Auto-generated patient ID</small>
+          </div>
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" name="fullName" required placeholder="Enter patient's full name">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="age">Age *</label>
+            <input type="number" id="age" name="age" required min="0" max="150" placeholder="Enter age">
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender *</label>
+            <select id="gender" name="gender" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required pattern="[789][0-9]{9}" maxlength="10" placeholder="Enter 10 digit number starting with 7, 8 or 9">
+            <small class="form-hint">Enter 10 digit number starting with 7, 8 or 9</small>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter email address">
+            <small class="form-hint">Optional email address</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bloodGroup">Blood Group</label>
+            <select id="bloodGroup" name="bloodGroup">
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="emergencyContact">Emergency Contact</label>
+            <input type="tel" id="emergencyContact" name="emergencyContact" pattern="[789][0-9]{9}" maxlength="10" placeholder="Emergency contact number">
+            <small class="form-hint">Emergency contact number</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="address">Address *</label>
+            <textarea id="address" name="address" required rows="3" placeholder="Enter complete address"></textarea>
+            <small class="form-hint">Enter the complete address</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appointmentDate">Appointment Date *</label>
+            <input type="date" id="appointmentDate" name="appointmentDate" required>
+            <small class="form-hint">Select a date when the doctor is available (future dates allowed)</small>
+          </div>
+          <div class="form-group">
+            <label for="appointmentTime">Appointment Time *</label>
+            <select id="appointmentTime" name="appointmentTime" required>
+              <option value="">Select Date and Doctor First</option>
+            </select>
+            <small class="form-hint">Time slots based on doctor's working hours</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="department">Department *</label>
+            <select id="department" name="department" required>
+              <option value="">Select Department</option>
+              <option value="cardiology">Cardiology</option>
+              <option value="neurology">Neurology</option>
+              <option value="orthopedics">Orthopedics</option>
+              <option value="pediatrics">Pediatrics</option>
+              <option value="dermatology">Dermatology</option>
+              <option value="ophthalmology">Ophthalmology</option>
+              <option value="general">General Medicine</option>
+              <option value="surgery">Surgery</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="doctor">Preferred Doctor *</label>
+            <div style="display: flex; gap: 0.5rem; align-items: end;">
+              <select id="doctor" name="doctor" required style="flex: 1;">
+                <option value="">Select Department First</option>
+              </select>
+              <button type="button" onclick="refreshDoctorData()" class="btn btn-secondary" style="padding: 0.5rem; font-size: 0.8rem;">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+            <small class="form-hint">Select a doctor from the department. Click refresh to update doctor list.</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="symptoms">Symptoms/Reason for Visit *</label>
+            <textarea id="symptoms" name="symptoms" required rows="3" placeholder="Describe symptoms or reason for visit"></textarea>
+            <small class="form-hint">Describe the symptoms or reason for visit</small>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Register Patient</button>
+          <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Update Patient Details Section -->
+    <section id="update" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-user-edit"></i> Update Patient Details</h2>
+        <p>Modify existing patient information</p>
+      </div>
+      
+      <div class="search-section">
+        <div class="search-box">
+          <input type="text" id="searchPatientId" placeholder="Enter Patient ID to search...">
+          <button onclick="searchPatient()" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        </div>
+      </div>
+      
+      <form id="updatePatientForm" class="dashboard-form" style="display: none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updatePatientId">Patient ID</label>
+            <input type="text" id="updatePatientId" name="updatePatientId" readonly>
+          </div>
+          <div class="form-group">
+            <label for="updateFullName">Full Name *</label>
+            <input type="text" id="updateFullName" name="updateFullName" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateAge">Age *</label>
+            <input type="number" id="updateAge" name="updateAge" required min="0" max="150">
+          </div>
+          <div class="form-group">
+            <label for="updateGender">Gender *</label>
+            <select id="updateGender" name="updateGender" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updatePhone">Phone Number *</label>
+            <input type="tel" id="updatePhone" name="updatePhone" required pattern="[789][0-9]{9}" maxlength="10">
+            <small class="form-hint">Enter 10 digit number starting with 7, 8 or 9</small>
+          </div>
+          <div class="form-group">
+            <label for="updateEmail">Email</label>
+            <input type="email" id="updateEmail" name="updateEmail">
+            <small class="form-hint">Optional email address</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateBloodGroup">Blood Group</label>
+            <select id="updateBloodGroup" name="updateBloodGroup">
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="updateEmergencyContact">Emergency Contact</label>
+            <input type="tel" id="updateEmergencyContact" name="updateEmergencyContact" pattern="[789][0-9]{9}" maxlength="10">
+            <small class="form-hint">Emergency contact number</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="updateAddress">Address *</label>
+            <textarea id="updateAddress" name="updateAddress" required rows="3"></textarea>
+            <small class="form-hint">Enter the complete address</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateAppointmentDate">Appointment Date *</label>
+            <input type="date" id="updateAppointmentDate" name="updateAppointmentDate" required>
+            <small class="form-hint">Select a date when the doctor is available (future dates allowed)</small>
+          </div>
+          <div class="form-group">
+            <label for="updateAppointmentTime">Appointment Time *</label>
+            <select id="updateAppointmentTime" name="updateAppointmentTime" required>
+              <option value="">Select Date and Doctor First</option>
+            </select>
+            <small class="form-hint">Time slots based on doctor's working hours</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="updateDepartment">Department *</label>
+            <select id="updateDepartment" name="updateDepartment" required>
+              <option value="">Select Department</option>
+              <option value="cardiology">Cardiology</option>
+              <option value="neurology">Neurology</option>
+              <option value="orthopedics">Orthopedics</option>
+              <option value="pediatrics">Pediatrics</option>
+              <option value="dermatology">Dermatology</option>
+              <option value="ophthalmology">Ophthalmology</option>
+              <option value="general">General Medicine</option>
+              <option value="surgery">Surgery</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="updateDoctor">Preferred Doctor *</label>
+            <div style="display: flex; gap: 0.5rem; align-items: end;">
+              <select id="updateDoctor" name="updateDoctor" required style="flex: 1;">
+                <option value="">Select Department First</option>
+              </select>
+              <button type="button" onclick="refreshDoctorData()" class="btn btn-secondary" style="padding: 0.5rem; font-size: 0.8rem;">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+            <small class="form-hint">Select a doctor from the department. Click refresh to update doctor list.</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group" style="width: 100%;">
+            <label for="updateSymptoms">Symptoms/Reason for Visit *</label>
+            <textarea id="updateSymptoms" name="updateSymptoms" required rows="3"></textarea>
+            <small class="form-hint">Describe the symptoms or reason for visit</small>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Patient</button>
+          <button type="button" onclick="cancelUpdate()" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Today's Patients Section -->
+    <section id="today" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-calendar-day"></i> Today's Patients</h2>
+        <p>View and manage today's patient appointments</p>
+        <div id="todayPatientsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading patient data from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="patientSearch" placeholder="Search patients by name, ID, or department...">
+        </div>
+        <div class="filter-controls">
+          <select id="departmentFilter">
+            <option value="">All Departments</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="ophthalmology">Ophthalmology</option>
+            <option value="general">General Medicine</option>
+            <option value="surgery">Surgery</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="patientTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Doctor</th>
+              <th>Appointment Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="patientTableBody">
+            <!-- Patient data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- View All Patients Section -->
+    <section id="all" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-users"></i> All Patients</h2>
+        <p>View and manage all patients in the system</p>
+        <div id="allPatientsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading patient data from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="allPatientSearch" placeholder="Search patients by name, ID, or department...">
+        </div>
+        <div class="filter-controls">
+          <select id="allDepartmentFilter">
+            <option value="">All Departments</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="ophthalmology">Ophthalmology</option>
+            <option value="general">General Medicine</option>
+            <option value="surgery">Surgery</option>
+          </select>
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="no-show">No Show</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="allPatientTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Appointment Date</th>
+              <th>Appointment Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="allPatientTableBody">
+            <!-- All patient data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Success/Error Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modalMessage"></div>
+    </div>
+  </div>
+
+  <script src="../js/staff.js"></script>
+  <script src="../js/receptionist.js"></script>
+</body>
+</html> 

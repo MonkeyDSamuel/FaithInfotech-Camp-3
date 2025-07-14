@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pharmacist Dashboard</title>
+  <link rel="stylesheet" href="../css/staff.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1><i class="fas fa-pills"></i> Pharmacist Dashboard</h1>
+      <nav>
+        <ul>
+          <li><button onclick="showSection('prescriptions', event)" class="nav-btn active"><i class="fas fa-prescription-bottle-medical"></i> Medicine Prescriptions</button></li>
+          <li><button onclick="showSection('medicines', event)" class="nav-btn"><i class="fas fa-pills"></i> Medicine List</button></li>
+          <li><button onclick="logout()" class="nav-btn logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Medicine Prescriptions Section -->
+    <section id="prescriptions" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-prescription-bottle-medical"></i> Medicine Prescriptions</h2>
+        <p>View and manage medicine prescriptions from doctors</p>
+        <div id="prescriptionsInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading prescriptions from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="prescriptionSearch" placeholder="Search prescriptions by Patient ID...">
+        </div>
+        <div class="filter-controls">
+          <select id="prescriptionStatusFilter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <select id="prescriptionDateFilter">
+            <option value="">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="prescriptionTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Patient Name</th>
+              <th>Date</th>
+              <th>Medical Notes</th>
+              <th>Medicines</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="prescriptionTableBody">
+            <!-- Prescriptions will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Medicine List Section -->
+    <section id="medicines" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-pills"></i> Medicine List</h2>
+        <p>Manage medicine inventory and stock</p>
+        <div id="medicinesInfo" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> Loading medicines from local storage...
+        </div>
+      </div>
+      
+      <div class="table-controls">
+        <div class="search-box">
+          <input type="text" id="medicineSearch" placeholder="Search medicines by name or generic name...">
+        </div>
+        <div class="filter-controls">
+          <select id="medicineCategoryFilter">
+            <option value="">All Categories</option>
+            <option value="antibiotics">Antibiotics</option>
+            <option value="painkillers">Painkillers</option>
+            <option value="vitamins">Vitamins</option>
+            <option value="diabetes">Diabetes</option>
+            <option value="cardiac">Cardiac</option>
+            <option value="other">Other</option>
+          </select>
+          <select id="medicineStockFilter">
+            <option value="">All Stock</option>
+            <option value="in-stock">In Stock</option>
+            <option value="low-stock">Low Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+          </select>
+        </div>
+        <button onclick="showAddMedicineForm()" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Medicine
+        </button>
+      </div>
+      
+      <div class="table-container">
+        <table id="medicineTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Medicine Name</th>
+              <th>Generic Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Dosage</th>
+              <th>Expiry Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="medicineTableBody">
+            <!-- Medicines will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add/Edit Medicine Modal -->
+    <div id="medicineModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closeMedicineModal()">&times;</span>
+        <h3 id="medicineModalTitle">Add New Medicine</h3>
+        
+        <form id="medicineForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="medicineName">Medicine Name *</label>
+              <input type="text" id="medicineName" name="medicineName" required placeholder="Enter medicine name">
+            </div>
+            <div class="form-group">
+              <label for="genericName">Generic Name *</label>
+              <input type="text" id="genericName" name="genericName" required placeholder="Enter generic name">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="medicineCategory">Category *</label>
+              <select id="medicineCategory" name="category" required>
+                <option value="">Select Category</option>
+                <option value="antibiotics">Antibiotics</option>
+                <option value="painkillers">Painkillers</option>
+                <option value="vitamins">Vitamins</option>
+                <option value="diabetes">Diabetes</option>
+                <option value="cardiac">Cardiac</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="medicineQuantity">Quantity *</label>
+              <input type="number" id="medicineQuantity" name="quantity" required min="0" placeholder="Enter quantity">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="medicineDosage">Dosage *</label>
+              <input type="text" id="medicineDosage" name="dosage" required placeholder="e.g., 500mg, 10ml, etc.">
+            </div>
+            <div class="form-group">
+              <label for="medicineExpiry">Expiry Date *</label>
+              <input type="date" id="medicineExpiry" name="expiryDate" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="medicinePrice">Price (₹)</label>
+              <input type="number" id="medicinePrice" name="price" min="0" step="0.01" placeholder="Enter price">
+            </div>
+            <div class="form-group">
+              <label for="medicineManufacturer">Manufacturer</label>
+              <input type="text" id="medicineManufacturer" name="manufacturer" placeholder="Enter manufacturer name">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="medicineDescription">Description</label>
+              <textarea id="medicineDescription" name="description" rows="3" placeholder="Enter medicine description, side effects, etc."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Medicine
+            </button>
+            <button type="button" onclick="closeMedicineModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Reduce Quantity Modal -->
+    <div id="reduceQuantityModal" class="modal">
+      <div class="modal-content" style="max-width: 500px;">
+        <span class="close" onclick="closeReduceQuantityModal()">&times;</span>
+        <h3>Reduce Medicine Quantity</h3>
+        
+        <form id="reduceQuantityForm" class="dashboard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reduceMedicineName">Medicine Name</label>
+              <input type="text" id="reduceMedicineName" readonly>
+            </div>
+            <div class="form-group">
+              <label for="currentQuantity">Current Quantity</label>
+              <input type="number" id="currentQuantity" readonly>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reduceQuantity">Reduce By *</label>
+              <input type="number" id="reduceQuantity" name="reduceQuantity" required min="1" placeholder="Enter quantity to reduce">
+            </div>
+            <div class="form-group">
+              <label for="reduceReason">Reason</label>
+              <select id="reduceReason" name="reason">
+                <option value="">Select Reason</option>
+                <option value="dispensed">Dispensed to Patient</option>
+                <option value="damaged">Damaged/Expired</option>
+                <option value="transfer">Transferred to Other Branch</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="reduceNotes">Notes</label>
+              <textarea id="reduceNotes" name="notes" rows="3" placeholder="Enter additional notes..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-minus"></i> Reduce Quantity
+            </button>
+            <button type="button" onclick="closeReduceQuantityModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View Prescription Details Modal -->
+    <div id="prescriptionDetailsModal" class="modal">
+      <div class="modal-content" style="max-width: 800px;">
+        <span class="close" onclick="closePrescriptionDetailsModal()">&times;</span>
+        <h3>Prescription Details</h3>
+        <div id="prescriptionDetailsContent">
+          <!-- Prescription details will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Prescription Status Modal -->
+    <div id="updateStatusModal" class="modal">
+      <div class="modal-content" style="max-width: 400px;">
+        <span class="close" onclick="closeUpdateStatusModal()">&times;</span>
+        <h3>Update Prescription Status</h3>
+        <form id="updateStatusForm">
+          <div class="form-group">
+            <label for="newPrescriptionStatus">Select Status</label>
+            <select id="newPrescriptionStatus" name="newPrescriptionStatus" required>
+              <option value="Active">Active</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            <button type="button" onclick="closeUpdateStatusModal()" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success/Error Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modalMessage"></div>
+    </div>
+  </div>
+
+  <script src="../js/staff.js"></script>
+  <script src="../js/pharmacist.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+/* style.css */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #fdfdfd;
+}
+
+header {
+  background-color: #222;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+nav .nav-bar {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+nav .nav-bar li {
+  margin: 0 15px;
+}
+
+nav .nav-bar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav .nav-bar a:hover {
+  text-decoration: underline;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.main-article {
+  flex: 2;
+  min-width: 300px;
+  align-items: flex-start;
+}
+
+.trending {
+  flex: 1;
+  min-width: 250px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.trending h3 {
+  margin-top: 0;
+}
+
+.trending ul {
+  list-style-type: square;
+  padding-left: 20px;
+}
+
+.trending li {
+  margin: 10px 0;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background-color: #222;
+  color: white;
+}
+
+.media-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.media-hover:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .main-article, .trending {
+    flex: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  nav .nav-bar li {
+    margin: 5px;
+  }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login</title>
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2><i class="fas fa-user-md"></i> Staff Login</h2>
+            <p>Access your department dashboard</p>
+        </div>
+        
+        <form id="staffLoginForm" class="login-form">
+            <div class="form-group">
+                <label for="staffRole">Select Role *</label>
+                <select id="staffRole" name="role" required>
+                    <option value="">Choose your role</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="pharmacist">Pharmacist</option>
+                    <option value="receptionist">Receptionist</option>
+                    <option value="labtech">Lab Technician</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="staffId">Staff ID *</label>
+                <input type="text" id="staffId" name="staffId" placeholder="Enter Staff ID" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <div class="password-input">
+                    <input type="password" id="password" name="password" placeholder="Enter Password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <span class="checkmark"></span>
+                    Remember me
+                </label>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <div class="login-links">
+            <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+            <span class="separator">|</span>
+            <a href="#" onclick="showHelp()">Need Help?</a>
+        </div>
+        
+        <div class="role-info" id="roleInfo" style="display: none;">
+            <h4>Role Information</h4>
+            <div id="roleDetails"></div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPassword()">&times;</span>
+            <h3>Reset Password</h3>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label for="resetStaffId">Staff ID</label>
+                    <input type="text" id="resetStaffId" required>
+                </div>
+                <div class="form-group">
+                    <label for="resetRole">Role</label>
+                    <select id="resetRole" required>
+                        <option value="">Select Role</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="pharmacist">Pharmacist</option>
+                        <option value="receptionist">Receptionist</option>
+                        <option value="labtech">Lab Technician</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="resetEmail">Email</label>
+                    <input type="email" id="resetEmail" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Reset Link</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHelp()">&times;</span>
+            <h3>Login Help</h3>
+            <div class="help-content">
+                <h4>How to Login:</h4>
+                <ol>
+                    <li>Select your role from the dropdown</li>
+                    <li>Enter your Staff ID</li>
+                    <li>Enter your password</li>
+                    <li>Click Login to access your dashboard</li>
+                </ol>
+                
+                <h4>Available Roles:</h4>
+                <ul>
+                    <li><strong>Doctor:</strong> Access patient records, prescriptions, and medical reports</li>
+                    <li><strong>Pharmacist:</strong> Manage medicine inventory and prescriptions</li>
+                    <li><strong>Receptionist:</strong> Handle patient registration and appointments</li>
+                    <li><strong>Lab Technician:</strong> Manage laboratory tests and reports</li>
+                </ul>
+                
+                <h4>Contact Support:</h4>
+                <p>If you're having trouble logging in, contact your system administrator.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalMessage"></div>
+        </div>
+    </div>
+
+    <script src="../js/staff.js"></script>
+    <script src="../js/staff_login.js"></script>
+    <script>
+        // In staff.js - automatically runs on all dashboards
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.location.pathname.includes('staff_login.html')) {
+                if (!checkAuthentication()) {
+                    return; // Will redirect to login
+                }
+            }
+        });
+    </script>
+</body>
+</html>
