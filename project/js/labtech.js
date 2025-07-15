@@ -288,9 +288,7 @@ function createPreviousReportRow(report) {
         <td>${reportDate}</td>
         <td>${statusBadge}</td>
         <td>
-            <button onclick="viewPreviousReport('${report.id}')" class="action-btn view">
-                <i class="fas fa-eye"></i> View Details
-            </button>
+            <!-- View button removed -->
         </td>
     `;
     
@@ -321,9 +319,6 @@ function createTestListRow(test) {
         <td>${test.duration} hours</td>
         <td>${statusBadge}</td>
         <td>
-            <button onclick="viewTest('${test.id}')" class="action-btn view">
-                <i class="fas fa-eye"></i> View
-            </button>
             <button onclick="editTest('${test.id}')" class="action-btn edit">
                 <i class="fas fa-edit"></i> Edit
             </button>
@@ -370,9 +365,6 @@ function createLabReportRow(labReport) {
         <td>${labReportDate}</td>
         <td>${statusBadge}</td>
         <td>
-            <button onclick="viewLabReport('${labReport.id}')" class="action-btn view">
-                <i class="fas fa-eye"></i> View
-            </button>
             <button onclick="updateLabReportStatus('${labReport.id}')" class="action-btn edit">
                 <i class="fas fa-edit"></i> Update Status
             </button>
@@ -712,6 +704,7 @@ function searchPreviousReports() {
 function searchLabReports() {
     const searchTerm = document.getElementById('testReportSearch').value.trim();
     const statusFilter = document.getElementById('testReportStatusFilter').value;
+    const dateFilter = document.getElementById('testReportDateFilter').value;
     
     let filteredLabReports = [...labReportData];
     
@@ -723,6 +716,28 @@ function searchLabReports() {
     // Apply status filter
     if (statusFilter) {
         filteredLabReports = staffUtils.filterTable(statusFilter, filteredLabReports, 'status');
+    }
+    
+    // Apply date filter
+    if (dateFilter) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        
+        filteredLabReports = filteredLabReports.filter(report => {
+            const reportDate = new Date(report.date);
+            switch (dateFilter) {
+                case 'today':
+                    return reportDate.toDateString() === today.toDateString();
+                case 'week':
+                    return reportDate >= weekAgo;
+                case 'month':
+                    return reportDate >= monthAgo;
+                default:
+                    return true;
+            }
+        });
     }
     
     // Sort by priority and received date (urgent first, then by date)
@@ -843,6 +858,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup search functionality for lab reports
     staffUtils.setupSearchInput('testReportSearch', searchLabReports);
     staffUtils.setupFilterDropdown('testReportStatusFilter', searchLabReports);
+    staffUtils.setupFilterDropdown('testReportDateFilter', searchLabReports);
     
     // Setup search functionality for previous reports
     staffUtils.setupSearchInput('previousReportsSearch', searchPreviousReports);
@@ -853,6 +869,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const testForm = document.getElementById('testForm');
     if (testForm) {
         testForm.addEventListener('submit', handleTestFormSubmit);
+    }
+    
+    const session = staffUtils && staffUtils.getSession ? staffUtils.getSession() : null;
+    if (session && session.name) {
+        const welcomeEl = document.getElementById('welcomeStaff');
+        if (welcomeEl) {
+            welcomeEl.textContent = `Welcome ${session.name}`;
+        }
     }
     
     console.log('Lab Technician Dashboard initialized successfully!');

@@ -11,6 +11,7 @@
   <header>
     <div class="header-content">
       <h1><i class="fas fa-microscope"></i> Lab Technician Dashboard</h1>
+      <span id="welcomeStaff" class="welcome-message"></span>
       <nav>
         <ul>
           <li><button onclick="showSection('testlist', event)" class="nav-btn active"><i class="fas fa-list"></i> Test List</button></li>
@@ -101,9 +102,6 @@
             <option value="month">This Month</option>
           </select>
         </div>
-        <button onclick="showAddTestReportForm()" class="btn btn-primary">
-          <i class="fas fa-plus"></i> Add New Test Report
-        </button>
       </div>
       
       <div class="table-container">

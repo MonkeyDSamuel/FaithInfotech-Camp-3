@@ -116,9 +116,6 @@ function createPrescriptionRow(prescription) {
         <td title="${medicines}">${medicinesPreview}</td>
         <td>${statusBadge}</td>
         <td>
-            <button onclick="viewPrescription('${prescription.id}')" class="action-btn view">
-                <i class="fas fa-eye"></i> View
-            </button>
             <button onclick="updatePrescriptionStatus('${prescription.id}')" class="action-btn edit">
                 <i class="fas fa-edit"></i> Update Status
             </button>
@@ -326,9 +323,6 @@ function createMedicineRow(medicine) {
         <td class="${isExpired ? 'text-danger' : ''}">${expiryDate}</td>
         <td>${stockStatus}</td>
         <td>
-            <button onclick="viewMedicine('${medicine.id}')" class="action-btn view">
-                <i class="fas fa-eye"></i> View
-            </button>
             <button onclick="editMedicine('${medicine.id}')" class="action-btn edit">
                 <i class="fas fa-edit"></i> Edit
             </button>
@@ -647,5 +641,12 @@ document.addEventListener('DOMContentLoaded', function() {
     staffUtils.setupFilterDropdown('medicineCategoryFilter', searchMedicines);
     staffUtils.setupFilterDropdown('medicineStockFilter', searchMedicines);
     
+    const session = staffUtils && staffUtils.getSession ? staffUtils.getSession() : null;
+    if (session && session.name) {
+        const welcomeEl = document.getElementById('welcomeStaff');
+        if (welcomeEl) {
+            welcomeEl.textContent = `Welcome ${session.name}`;
+        }
+    }
     console.log('Pharmacist Dashboard initialized successfully!');
 }); 

@@ -144,7 +144,10 @@ function saveLabReportData() {
 
 // Get today's appointments for the current doctor
 function getTodayAppointments() {
-  const today = new Date().toISOString().split('T')[0];
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  
   const doctorId = getCurrentDoctorId();
   
   if (!doctorId) {
@@ -152,15 +155,30 @@ function getTodayAppointments() {
     return [];
   }
   
-  return patientData.filter(patient => 
-    patient.doctor === doctorId && 
-    patient.appointmentDate === today
-  );
+  console.log('Today\'s date:', todayString);
+  console.log('Total patient data:', patientData.length);
+  
+  const todayAppointments = patientData.filter(patient => {
+    const isToday = patient.appointmentDate === todayString;
+    const isCorrectDoctor = patient.doctor === doctorId;
+    
+    if (isCorrectDoctor) {
+      console.log(`Patient ${patient.id}: appointmentDate=${patient.appointmentDate}, isToday=${isToday}`);
+    }
+    
+    return isCorrectDoctor && isToday;
+  });
+  
+  console.log(`Found ${todayAppointments.length} appointments for today (${todayString}) for doctor ${doctorId}`);
+  return todayAppointments;
 }
 
 // Get future appointments for the current doctor
 function getFutureAppointments() {
-  const today = new Date().toISOString().split('T')[0];
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  
   const doctorId = getCurrentDoctorId();
   
   if (!doctorId) {
@@ -168,10 +186,51 @@ function getFutureAppointments() {
     return [];
   }
   
-  return patientData.filter(patient => 
-    patient.doctor === doctorId && 
-    patient.appointmentDate > today
-  );
+  console.log('Today\'s date for future appointments:', todayString);
+  
+  const futureAppointments = patientData.filter(patient => {
+    const isFuture = patient.appointmentDate > todayString;
+    const isCorrectDoctor = patient.doctor === doctorId;
+    
+    if (isCorrectDoctor) {
+      console.log(`Patient ${patient.id}: appointmentDate=${patient.appointmentDate}, isFuture=${isFuture}`);
+    }
+    
+    return isCorrectDoctor && isFuture;
+  });
+  
+  console.log(`Found ${futureAppointments.length} future appointments for doctor ${doctorId}`);
+  return futureAppointments;
+}
+
+// Get previous appointments for the current doctor
+function getPreviousAppointments() {
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+  
+  const doctorId = getCurrentDoctorId();
+  
+  if (!doctorId) {
+    console.log('No doctor ID found in session');
+    return [];
+  }
+  
+  console.log('Today\'s date for previous appointments:', todayString);
+  
+  const previousAppointments = patientData.filter(patient => {
+    const isPrevious = patient.appointmentDate < todayString;
+    const isCorrectDoctor = patient.doctor === doctorId;
+    
+    if (isCorrectDoctor) {
+      console.log(`Patient ${patient.id}: appointmentDate=${patient.appointmentDate}, isPrevious=${isPrevious}`);
+    }
+    
+    return isCorrectDoctor && isPrevious;
+  });
+  
+  console.log(`Found ${previousAppointments.length} previous appointments for doctor ${doctorId}`);
+  return previousAppointments;
 }
 
 // Load today's appointments
@@ -191,6 +250,15 @@ function loadTodayAppointments() {
   // Set current doctor ID from session
   currentDoctorId = getCurrentDoctorId();
   console.log(`Current Doctor ID: ${currentDoctorId}`);
+  
+  // Debug: Show all appointments for this doctor
+  const allDoctorAppointments = patientData.filter(patient => patient.doctor === currentDoctorId);
+  console.log(`All appointments for doctor ${currentDoctorId}:`, allDoctorAppointments.map(p => ({
+    id: p.id,
+    name: p.name,
+    appointmentDate: p.appointmentDate,
+    status: p.status
+  })));
   
   const todayAppointments = getTodayAppointments();
   
@@ -244,6 +312,41 @@ function loadFutureAppointments() {
   }
 }
 
+// Load previous appointments
+function loadPreviousAppointments() {
+  // Validate doctor session first
+  if (!validateDoctorSession()) {
+    const infoElement = document.getElementById('previousAppointmentsInfo');
+    if (infoElement) {
+      infoElement.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Invalid session. Please login as a doctor.`;
+      infoElement.style.background = '#ffebee';
+    }
+    return;
+  }
+  
+  loadPatientData();
+  
+  // Set current doctor ID from session
+  currentDoctorId = getCurrentDoctorId();
+  console.log(`Current Doctor ID: ${currentDoctorId}`);
+  
+  const previousAppointments = getPreviousAppointments();
+  
+  console.log(`Found ${previousAppointments.length} previous appointments for doctor ${currentDoctorId}`);
+  displayPreviousAppointments(previousAppointments);
+  
+  // Update info display
+  const infoElement = document.getElementById('previousAppointmentsInfo');
+  if (infoElement) {
+    if (currentDoctorId) {
+      infoElement.innerHTML = `<i class="fas fa-info-circle"></i> Loaded ${previousAppointments.length} previous appointments (Doctor: ${currentDoctorId}) from receptionist's local storage`;
+    } else {
+      infoElement.innerHTML = `<i class="fas fa-exclamation-triangle"></i> No doctor session found. Please login as a doctor.`;
+    }
+    infoElement.style.background = previousAppointments.length > 0 ? '#e8f5e8' : '#fff3cd';
+  }
+}
+
 // Display today's appointments
 function displayTodayAppointments(appointments) {
   staffUtils.displayTableData(appointments, 'todayAppointmentsTableBody', createTodayAppointmentRow);
@@ -252,6 +355,11 @@ function displayTodayAppointments(appointments) {
 // Display future appointments
 function displayFutureAppointments(appointments) {
   staffUtils.displayTableData(appointments, 'futureAppointmentsTableBody', createFutureAppointmentRow);
+}
+
+// Display previous appointments
+function displayPreviousAppointments(appointments) {
+  staffUtils.displayTableData(appointments, 'previousAppointmentsTableBody', createPreviousAppointmentRow);
 }
 
 // Create today's appointment row
@@ -270,19 +378,83 @@ function createTodayAppointmentRow(appointment) {
     <td>${appointment.symptoms || 'N/A'}</td>
     <td>${statusBadge}</td>
     <td>
-      <button onclick="viewPatientDetails('${appointment.id}')" class="action-btn edit">
-        <i class="fas fa-eye"></i> View
-      </button>
       <button onclick="addPrescription('${appointment.id}')" class="action-btn edit">
         <i class="fas fa-prescription-bottle-medical"></i> Prescribe
       </button>
       <button onclick="addLabReport('${appointment.id}')" class="action-btn edit">
         <i class="fas fa-flask"></i> Lab Test
       </button>
+      <button onclick="updateAppointmentStatus('${appointment.id}')" class="action-btn edit">
+        <i class="fas fa-edit"></i> Update Status
+      </button>
     </td>
   `;
   
   return row;
+}
+
+// Status update logic for today's appointments
+function updateAppointmentStatus(appointmentId) {
+  const appointment = patientData.find(p => p.id === appointmentId);
+  if (!appointment) {
+    staffUtils.showModal('Appointment not found.', 'error');
+    return;
+  }
+  
+  // Modal HTML for status update
+  const statusOptions = ['Scheduled', 'In Progress', 'Completed', 'Cancelled'];
+  const modalHTML = `
+    <div id="statusUpdateModal" class="modal">
+      <div class="modal-content" style="max-width: 400px;">
+        <span class="close" onclick="closeStatusUpdateModal()">&times;</span>
+        <h3>Update Appointment Status</h3>
+        <p><strong>Patient:</strong> ${appointment.name} (${appointment.id})</p>
+        <p><strong>Current Status:</strong> ${appointment.status}</p>
+        <form id="statusUpdateForm">
+          <div class="form-group">
+            <label for="newStatus">New Status:</label>
+            <select id="newStatus" name="newStatus" required>
+              ${statusOptions.map(status =>
+                `<option value="${status}" ${status === appointment.status ? 'selected' : ''}>${status}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Status</button>
+            <button type="button" onclick="closeStatusUpdateModal()" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  // Remove existing modal if any
+  const existingModal = document.getElementById('statusUpdateModal');
+  if (existingModal) existingModal.remove();
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  document.getElementById('statusUpdateModal').style.display = 'block';
+  document.getElementById('statusUpdateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    confirmAppointmentStatusUpdate(appointmentId);
+  });
+}
+
+function closeStatusUpdateModal() {
+  const modal = document.getElementById('statusUpdateModal');
+  if (modal) modal.remove();
+}
+
+function confirmAppointmentStatusUpdate(appointmentId) {
+  const appointment = patientData.find(p => p.id === appointmentId);
+  if (!appointment) {
+    staffUtils.showModal('Appointment not found.', 'error');
+    return;
+  }
+  const newStatus = document.getElementById('newStatus').value;
+  appointment.status = newStatus;
+  staffUtils.saveData(patientData, 'hospitalPatientData');
+  closeStatusUpdateModal();
+  loadTodayAppointments();
+  staffUtils.showModal('Appointment status updated successfully!', 'success');
 }
 
 // Create future appointment row
@@ -302,9 +474,35 @@ function createFutureAppointmentRow(appointment) {
     <td>${appointment.symptoms || 'N/A'}</td>
     <td>${statusBadge}</td>
     <td>
-      <button onclick="viewPatientDetails('${appointment.id}')" class="action-btn edit">
-        <i class="fas fa-eye"></i> View
+      <button onclick="addPrescription('${appointment.id}')" class="action-btn edit">
+        <i class="fas fa-prescription-bottle-medical"></i> Prescribe
       </button>
+      <button onclick="addLabReport('${appointment.id}')" class="action-btn edit">
+        <i class="fas fa-flask"></i> Lab Test
+      </button>
+    </td>
+  `;
+  
+  return row;
+}
+
+// Create previous appointment row
+function createPreviousAppointmentRow(appointment) {
+  const row = document.createElement('tr');
+  
+  const statusBadge = staffUtils.getStatusBadge(appointment.status);
+  const appointmentDate = staffUtils.formatDate(appointment.appointmentDate);
+  
+  row.innerHTML = `
+    <td>${appointment.id}</td>
+    <td>${appointment.name}</td>
+    <td>${appointment.age}</td>
+    <td>${appointment.phone}</td>
+    <td>${appointmentDate}</td>
+    <td>${appointment.appointmentTime}</td>
+    <td>${appointment.symptoms || 'N/A'}</td>
+    <td>${statusBadge}</td>
+    <td>
       <button onclick="addPrescription('${appointment.id}')" class="action-btn edit">
         <i class="fas fa-prescription-bottle-medical"></i> Prescribe
       </button>
@@ -321,16 +519,22 @@ function createFutureAppointmentRow(appointment) {
 function loadPrescriptionTable() {
   loadPrescriptionData();
   
-  // Sort prescriptions by patient ID
-  const sortedPrescriptions = prescriptionData.sort((a, b) => a.patientId.localeCompare(b.patientId));
+  // Filter prescriptions by current doctor
+  const currentDoctorId = getCurrentDoctorId();
+  const doctorPrescriptions = prescriptionData.filter(prescription => 
+    prescription.doctorId === currentDoctorId || prescription.doctorId === undefined
+  );
   
-  console.log(`Displaying ${sortedPrescriptions.length} prescriptions`);
+  // Sort prescriptions by patient ID
+  const sortedPrescriptions = doctorPrescriptions.sort((a, b) => a.patientId.localeCompare(b.patientId));
+  
+  console.log(`Displaying ${sortedPrescriptions.length} prescriptions for doctor ${currentDoctorId}`);
   displayPrescriptionTable(sortedPrescriptions);
   
   // Update info display
   const infoElement = document.getElementById('prescriptionInfo');
   if (infoElement) {
-    infoElement.innerHTML = `<i class="fas fa-info-circle"></i> Loaded ${sortedPrescriptions.length} prescriptions from local storage (sorted by Patient ID)`;
+    infoElement.innerHTML = `<i class="fas fa-info-circle"></i> Loaded ${sortedPrescriptions.length} prescriptions for doctor ${currentDoctorId} from local storage (sorted by Patient ID)`;
     infoElement.style.background = sortedPrescriptions.length > 0 ? '#e8f5e8' : '#fff3cd';
   }
 }
@@ -374,14 +578,20 @@ function createPrescriptionRow(prescription) {
 function loadLabReportTable() {
   loadLabReportData();
   
-  console.log(`Displaying ${labReportData.length} lab reports`);
-  displayLabReportTable(labReportData);
+  // Filter lab reports by current doctor
+  const currentDoctorId = getCurrentDoctorId();
+  const doctorLabReports = labReportData.filter(labReport => 
+    labReport.doctorId === currentDoctorId || labReport.doctorId === undefined
+  );
+  
+  console.log(`Displaying ${doctorLabReports.length} lab reports for doctor ${currentDoctorId}`);
+  displayLabReportTable(doctorLabReports);
   
   // Update info display
   const infoElement = document.getElementById('labReportInfo');
   if (infoElement) {
-    infoElement.innerHTML = `<i class="fas fa-info-circle"></i> Loaded ${labReportData.length} lab reports from local storage`;
-    infoElement.style.background = labReportData.length > 0 ? '#e8f5e8' : '#fff3cd';
+    infoElement.innerHTML = `<i class="fas fa-info-circle"></i> Loaded ${doctorLabReports.length} lab reports for doctor ${currentDoctorId} from local storage`;
+    infoElement.style.background = doctorLabReports.length > 0 ? '#e8f5e8' : '#fff3cd';
   }
 }
 
@@ -427,6 +637,10 @@ function showAddPrescriptionForm() {
   document.getElementById('prescriptionPatientId').value = '';
   document.getElementById('prescriptionPatientName').value = '';
   document.getElementById('prescriptionDate').value = new Date().toISOString().split('T')[0];
+  
+  // Populate patient search dropdown
+  populatePatientSearchDropdown('prescriptionPatientSearch');
+  
   document.getElementById('prescriptionModal').style.display = 'block';
 }
 
@@ -477,6 +691,10 @@ function showAddLabReportForm() {
   document.getElementById('labReportPatientId').value = '';
   document.getElementById('labReportPatientName').value = '';
   document.getElementById('labReportDate').value = new Date().toISOString().split('T')[0];
+  
+  // Populate patient search dropdown
+  populatePatientSearchDropdown('labReportPatientSearch');
+  
   document.getElementById('labReportModal').style.display = 'block';
 }
 
@@ -519,6 +737,55 @@ function editLabReport(labReportId) {
 function closeLabReportModal() {
   document.getElementById('labReportModal').style.display = 'none';
   document.getElementById('labReportForm').dataset.labReportId = '';
+}
+
+// Helper function to populate patient search dropdown
+function populatePatientSearchDropdown(dropdownId) {
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.innerHTML = '<option value="">Search for a patient...</option>';
+  
+  const doctorId = getCurrentDoctorId();
+  if (!doctorId) {
+    console.log('No doctor ID found for patient search');
+    return;
+  }
+  
+  // Filter patients to only show those associated with the current doctor
+  const doctorPatients = patientData.filter(patient => patient.doctor === doctorId);
+  
+  if (doctorPatients && doctorPatients.length > 0) {
+    doctorPatients.forEach(patient => {
+      const option = document.createElement('option');
+      option.value = patient.id;
+      option.textContent = `${patient.id} - ${patient.name}`;
+      dropdown.appendChild(option);
+    });
+    console.log(`Populated dropdown with ${doctorPatients.length} patients for doctor ${doctorId}`);
+  } else {
+    console.log(`No patients found for doctor ${doctorId}`);
+  }
+}
+
+// Function to handle patient selection for prescriptions
+function selectPrescriptionPatient(patientId) {
+  if (!patientId) return;
+  
+  const patient = patientData.find(p => p.id === patientId);
+  if (patient) {
+    document.getElementById('prescriptionPatientId').value = patient.id;
+    document.getElementById('prescriptionPatientName').value = patient.name;
+  }
+}
+
+// Function to handle patient selection for lab reports
+function selectLabReportPatient(patientId) {
+  if (!patientId) return;
+  
+  const patient = patientData.find(p => p.id === patientId);
+  if (patient) {
+    document.getElementById('labReportPatientId').value = patient.id;
+    document.getElementById('labReportPatientName').value = patient.name;
+  }
 }
 
 // Delete functions
@@ -645,11 +912,64 @@ function searchFutureAppointments() {
   displayFutureAppointments(filteredAppointments);
 }
 
+function searchPreviousAppointments() {
+  const searchTerm = document.getElementById('previousAppointmentSearch').value.trim();
+  const statusFilter = document.getElementById('previousStatusFilter').value;
+  const dateFilter = document.getElementById('previousDateFilter').value;
+  
+  let filteredAppointments = getPreviousAppointments();
+  
+  // Apply search filter
+  if (searchTerm) {
+    filteredAppointments = staffUtils.searchTable(searchTerm, filteredAppointments, ['id', 'name']);
+  }
+  
+  // Apply status filter
+  if (statusFilter) {
+    filteredAppointments = staffUtils.filterTable(statusFilter, filteredAppointments, 'status');
+  }
+  
+  // Apply date filter
+  if (dateFilter) {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    
+    filteredAppointments = filteredAppointments.filter(appointment => {
+      const appointmentDate = new Date(appointment.appointmentDate);
+      
+      switch (dateFilter) {
+        case 'yesterday':
+          return appointmentDate.toDateString() === yesterday.toDateString();
+        case 'week':
+          return appointmentDate >= lastWeek;
+        case 'month':
+          return appointmentDate >= lastMonth;
+        default:
+          return true;
+      }
+    });
+  }
+  
+  // Sort by appointment date (newest first)
+  filteredAppointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+  
+  displayPreviousAppointments(filteredAppointments);
+}
+
 function searchPrescriptions() {
   const searchTerm = document.getElementById('prescriptionSearch').value.trim();
   const filterValue = document.getElementById('prescriptionDateFilter').value;
   
-  let filteredPrescriptions = [...prescriptionData];
+  // Get current doctor's prescriptions
+  const currentDoctorId = getCurrentDoctorId();
+  let filteredPrescriptions = prescriptionData.filter(prescription => 
+    prescription.doctorId === currentDoctorId || prescription.doctorId === undefined
+  );
   
   // Apply search filter
   if (searchTerm) {
@@ -688,7 +1008,11 @@ function searchLabReports() {
   const searchTerm = document.getElementById('labReportSearch').value.trim();
   const filterValue = document.getElementById('labReportStatusFilter').value;
   
-  let filteredLabReports = [...labReportData];
+  // Get current doctor's lab reports
+  const currentDoctorId = getCurrentDoctorId();
+  let filteredLabReports = labReportData.filter(labReport => 
+    labReport.doctorId === currentDoctorId || labReport.doctorId === undefined
+  );
   
   // Apply search filter
   if (searchTerm) {
@@ -722,6 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load initial table data
   loadTodayAppointments();
   loadFutureAppointments();
+  loadPreviousAppointments();
   loadPrescriptionTable();
   loadLabReportTable();
   
@@ -732,6 +1057,10 @@ document.addEventListener('DOMContentLoaded', function() {
   staffUtils.setupSearchInput('futureAppointmentSearch', searchFutureAppointments);
   staffUtils.setupFilterDropdown('futureStatusFilter', searchFutureAppointments);
   
+  staffUtils.setupSearchInput('previousAppointmentSearch', searchPreviousAppointments);
+  staffUtils.setupFilterDropdown('previousStatusFilter', searchPreviousAppointments);
+  staffUtils.setupFilterDropdown('previousDateFilter', searchPreviousAppointments);
+  
   staffUtils.setupSearchInput('prescriptionSearch', searchPrescriptions);
   staffUtils.setupFilterDropdown('prescriptionDateFilter', searchPrescriptions);
   
@@ -739,6 +1068,13 @@ document.addEventListener('DOMContentLoaded', function() {
   staffUtils.setupFilterDropdown('labReportStatusFilter', searchLabReports);
   
   console.log('Doctor Dashboard initialized successfully!');
+  const session = staffUtils && staffUtils.getSession ? staffUtils.getSession() : null;
+  if (session && session.name) {
+    const welcomeEl = document.getElementById('welcomeStaff');
+    if (welcomeEl) {
+      welcomeEl.textContent = `Welcome ${session.name}`;
+    }
+  }
 });
 
 // Prescription form submission

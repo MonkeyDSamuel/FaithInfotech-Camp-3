@@ -655,6 +655,18 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Note: PIN code auto-population removed since address is now a single textarea
+  const session = staffUtils && staffUtils.getSession ? staffUtils.getSession() : null;
+  if (session && session.name) {
+    const welcomeEl = document.getElementById('welcomeStaff');
+    if (welcomeEl) {
+      welcomeEl.textContent = `Welcome ${session.name}`;
+    }
+  } else {
+    const welcomeEl = document.getElementById('welcomeStaff');
+    if (welcomeEl) {
+      welcomeEl.textContent = `Welcome Admin`;
+    }
+  }
 });
 
 // Note: Country-state data removed since address is now a single textarea

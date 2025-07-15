@@ -31,40 +31,37 @@ function loadDoctorData() {
     // Filter only doctors from staff data
     const doctors = staffData.filter(staff => staff.department === 'doctor');
     
-    // Group doctors by department (all doctors are in 'doctor' department)
-    doctorData = {
-      'cardiology': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('cardio')),
-      'neurology': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('neuro')),
-      'orthopedics': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('ortho')),
-      'pediatrics': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('pediatr')),
-      'dermatology': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('dermat')),
-      'ophthalmology': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('ophthal')),
-      'general': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('general')),
-      'surgery': doctors.filter(doc => doc.position && doc.position.toLowerCase().includes('surgery'))
-    };
+    // Map of department keys to display names
+    const departmentKeys = [
+      'cardiologist',
+      'neurologist',
+      'orthopedic_surgeon',
+      'pediatrician',
+      'general_physician',
+      'dermatologist',
+      'psychiatrist',
+      'oncologist',
+      'radiologist',
+      'anesthesiologist'
+    ];
     
-    // If no doctors found in specific departments, put them in general
-    const unassignedDoctors = doctors.filter(doc => {
-      const position = doc.position ? doc.position.toLowerCase() : '';
-      return !position.includes('cardio') && 
-             !position.includes('neuro') && 
-             !position.includes('ortho') && 
-             !position.includes('pediatr') && 
-             !position.includes('dermat') && 
-             !position.includes('ophthal') && 
-             !position.includes('surgery');
+    doctorData = {};
+    departmentKeys.forEach(key => {
+      doctorData[key] = doctors.filter(doc => {
+        if (!doc.position) return false;
+        // Normalize both position and key for comparison
+        const pos = doc.position.toLowerCase().replace(/\s|_/g, '');
+        const dept = key.toLowerCase().replace(/\s|_/g, '');
+        return pos === dept;
+      });
     });
-    
-    if (unassignedDoctors.length > 0) {
-      doctorData['general'] = doctorData['general'].concat(unassignedDoctors);
-    }
   }
   
   // If no doctors found, use fallback data
   if (Object.keys(doctorData).every(dept => doctorData[dept].length === 0)) {
     doctorData = {
-      'general': [
-        { id: 'DR001', name: 'Dr. Sample Doctor', specialization: 'General Physician' }
+      'general_physician': [
+        { id: 'DR001', name: 'Dr. Sample Doctor', position: 'General Physician' }
       ]
     };
   }
@@ -213,6 +210,7 @@ function isTimeSlotValid(timeSlot, appointmentDate) {
 
 // Get available time slots for a doctor on a specific date
 function getAvailableTimeSlots(doctorId, appointmentDate, excludePatientId = null) {
+  loadPatientData(); // Ensure latest patient data is loaded
   const allSlots = generateTimeSlotsForDoctor(doctorId);
   const bookedSlots = patientData
     .filter(patient => 
@@ -657,14 +655,16 @@ function createAllPatientRow(patient) {
 // Get department name
 function getDepartmentName(department) {
   const departmentNames = {
-    'cardiology': 'Cardiology',
-    'neurology': 'Neurology',
-    'orthopedics': 'Orthopedics',
-    'pediatrics': 'Pediatrics',
-    'dermatology': 'Dermatology',
-    'ophthalmology': 'Ophthalmology',
-    'general': 'General Medicine',
-    'surgery': 'Surgery'
+    'cardiologist': 'Cardiologist',
+    'neurologist': 'Neurologist',
+    'orthopedic_surgeon': 'Orthopedic Surgeon',
+    'pediatrician': 'Pediatrician',
+    'general_physician': 'General Physician',
+    'dermatologist': 'Dermatologist',
+    'psychiatrist': 'Psychiatrist',
+    'oncologist': 'Oncologist',
+    'radiologist': 'Radiologist',
+    'anesthesiologist': 'Anesthesiologist'
   };
   
   return departmentNames[department] || department;
@@ -934,6 +934,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Don't set default date - it will be set when doctor is selected
   
   console.log('Receptionist Dashboard initialized successfully!');
+  const session = staffUtils && staffUtils.getSession ? staffUtils.getSession() : null;
+    if (session && session.name) {
+        const welcomeEl = document.getElementById('welcomeStaff');
+        if (welcomeEl) {
+            welcomeEl.textContent = `Welcome ${session.name}`;
+        }
+    }
 });
 
 // Setup department and doctor dropdown functionality
